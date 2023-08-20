@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consumir API de unidades</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<h1>Unidades:</h1>
+<ul id="unidades"></ul>
+
+<form>
+  <label for="nombre">Nombre:</label>
+  <input type="text" id="nombre" name="nombre">
+  <button type="button" onclick="saveUnidad()">Guardar</button>
+</form>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+        const apiUrl = 'http://localhost:8080/api/unidades';
+
+        // Configurar las CORS
+        axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+        axios.defaults.headers.common['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
+        axios.defaults.headers.common['Access-Control-Allow-Headers'] = 'Origin, Content-Type, X-Auth-Token';
+
+        // Obtener todas las unidades
+        axios.get(apiUrl + '/all')
+            .then(response => {
+                const unidades = document.getElementById('unidades');
+                response.data.forEach(unidad => {
+                    const li = document.createElement('li');
+                    li.appendChild(document.createTextNode(unidad.nombre));
+                    unidades.appendChild(li);
+                });
+            })
+            .catch(error => console.error(error));
+
+        // Obtener una unidad por ID
+        axios.get(apiUrl + '/find/1')
+            .then(response => console.log(response.data))
+            .catch(error => console.error(error));
+
+        // Guardar una unidad
+        function saveUnidad() {
+            const nombre = document.getElementById('nombre').value;
+            const unidad = { nombre: nombre };
+            axios.post(apiUrl + '/save', unidad)
+                .then(response => console.log(response.data))
+                .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>
